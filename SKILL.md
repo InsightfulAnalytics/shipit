@@ -1,6 +1,6 @@
 ---
-name: ship
-description: "Ship the current work: branch off the default branch if needed, commit, push, open a PR. `/ship merge` also lands it once it is up to date, conflict-free and every check has passed, then prunes."
+name: shipit
+description: "Ship the current work: branch off the default branch if needed, commit, push, open a PR. `/shipit merge` also lands it once it is up to date, conflict-free and every check has passed, then prunes."
 argument-hint: "[merge] [notes]"
 disable-model-invocation: true
 allowed-tools: Bash(git status *) Bash(git rev-parse *) Bash(git remote -v) Bash(git remote get-url *) Bash(git remote set-head *) Bash(git fetch *) Bash(git log *) Bash(git diff *) Bash(git grep *) Bash(git ls-files *) Bash(git merge-base *) Bash(git switch -c *) Bash(git switch --no-track -c *) Bash(git switch main) Bash(git switch master) Bash(git add -A) Bash(git add -- *) Bash(git reset -q -- *) Bash(git commit *) Bash(git cherry-pick *) Bash(git push --recurse-submodules=check -u origin HEAD) Bash(git branch -vv) Bash(git branch -d *) Bash(git branch -D *) Bash(git branch -f *) Bash(gh auth status *) Bash(gh pr view *) Bash(gh pr list *) Bash(gh pr create *) Bash(gh pr merge * --squash --delete-branch --match-head-commit *) Bash(gh pr merge * --merge --delete-branch --match-head-commit *) Bash(gh pr merge * --rebase --delete-branch --match-head-commit *) Bash(gh pr merge * --squash --match-head-commit *) Bash(gh pr checks *) Bash(git merge --no-edit origin/*) Bash(git merge --abort) Bash(npm ci) Bash(npm run * --if-present) Bash(python -m pytest -q) Bash(pbir validate *) Bash(pbir desktop list *) Bash(python3 ~/.claude/skills/security-gate/scripts/gate.py *)
@@ -40,8 +40,8 @@ closed PR) and `references/landing.md` (step 6 detail, local checks, refusals).
 - When git refuses a command to protect local changes, stop and report. The forcing flags (`-f`,
   `--discard-changes`, `--merge`) are the user's call; a half-done cherry-pick gets
   `git cherry-pick --abort` first. Commit hooks always run.
-- After any stop, the user's reply clears the pre-approved commands. Under `/ship`, ask them to
-  rerun the same command (`/ship merge` after a stop in step 6), with their answer as guidance
+- After any stop, the user's reply clears the pre-approved commands. Under `/shipit`, ask them to
+  rerun the same command (`/shipit merge` after a stop in step 6), with their answer as guidance
   words. Under the auto-commit rule, resume at step 1.
 
 ## 1. Read the repo
@@ -113,7 +113,7 @@ Done when HEAD is a branch other than the default, with no merged or closed PR.
 
 ## 4. Commit
 
-Stage everything with `git add -A` under `/ship`. Under the auto-commit rule, stage only the files
+Stage everything with `git add -A` under `/shipit`. Under the auto-commit rule, stage only the files
 this task changed (`git add -- <paths>`); a file that already had uncommitted edits before the
 task stays unstaged. A repo with no `.gitignore` gets one first, covering its toolchain (build
 output, dependency folders, for PBIP `**/.pbi/localSettings.json` and `**/.pbi/cache.abf`) plus
