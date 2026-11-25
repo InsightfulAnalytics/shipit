@@ -45,7 +45,7 @@ what the repo itself defines, and require exit 0 from every command:
 - Any other refusal (conflicts, required checks, missing reviews, a draft, a moved head) is a
   stop-and-report; quote its message.
 - gh prints nothing on success here, so read `gh pr view <pr url> -R <url> --json state`. OPEN
-  means queued: report that and stop, and a later `/ship merge` finishes 6.5 and 6.6.
+  means queued: report that and stop, and a later `/shipit merge` finishes 6.5 and 6.6.
 - Merges run without `--admin` or `--auto`. `<pr url>` carries GitHub's own spelling of the
   owner, which `--delete-branch` needs. With `-R`, gh merges and deletes the remote branch and
   leaves this checkout alone.

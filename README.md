@@ -1,16 +1,20 @@
-# ship
+# shipit
 
 A [Claude Code](https://code.claude.com) skill that does the git work at the end of a task, so
 you stop typing the same five commands.
 
-- **`/ship`** branches off the default branch if you are on it, commits, pushes and opens a pull
+- **`/shipit`** branches off the default branch if you are on it, commits, pushes and opens a pull
   request.
-- **`/ship merge`** does all of that, then brings the branch up to date with the default branch,
+- **`/shipit merge`** does all of that, then brings the branch up to date with the default branch,
   waits for every check to pass, squash-merges the PR, deletes the branch, pulls the default
   branch and prunes stale local branches. `merge` has to be the first word.
 
-Anything else you type after `/ship` is guidance for the branch name, commit message and PR
+Anything else you type after `/shipit` is guidance for the branch name, commit message and PR
 description.
+
+It was called `/ship` until Claude Code added a built-in `/ship` command in a 2.1 release.
+Claude Code does not load a custom skill that shares a built-in command's name, so this one was
+renamed. If you cloned it as `~/.claude/skills/ship`, rename that folder to `shipit`.
 
 ## What it checks before it acts
 
@@ -25,7 +29,7 @@ description.
   common key, token, password and connection-string shapes, and the matching lines are read. It
   is a backstop, not a guarantee: read your diff before shipping to a public repo.
 - **It runs your security gate, if you have one.** When `~/.claude/skills/security-gate/SKILL.md`
-  exists, `/ship` follows that skill's diff mode before every push and puts its three summary
+  exists, `/shipit` follows that skill's diff mode before every push and puts its three summary
   lines in the PR body under Security. A live secret, or a gate that cannot run, stops the push;
   any other blocker opens the PR but holds the merge.
 - **It holds back files that rarely belong in git.** `.env` files, keys, embedded repos, files
@@ -51,9 +55,9 @@ description.
   built, deployed or run reads: notes, docs, and agent instructions, but not Claude Code settings,
   hooks, MCP config, tool grants, or a rule about committing, merging, deploying, permissions or
   security review, wherever it is written. When a host or CI builds the repo, the PR's build
-  output must also match the default branch's. `/ship merge` lands such a PR even in a repo that
+  output must also match the default branch's. `/shipit merge` lands such a PR even in a repo that
   holds PRs for your OK, and in one with no checks.
-- **It only merges when you say `merge`.** Plain `/ship` stops at an open PR.
+- **It only merges when you say `merge`.** Plain `/shipit` stops at an open PR.
 
 ## Requirements
 
@@ -61,7 +65,7 @@ description.
 - git 2.42 or later. On Windows, Git for Windows, because the skill runs its commands through
   Claude Code's Bash tool (Git Bash).
 - The [GitHub CLI](https://cli.github.com) 2.57 or later, authenticated, for pull requests.
-  Without it, or with a remote that is not on GitHub, `/ship` commits and pushes and stops there.
+  Without it, or with a remote that is not on GitHub, `/shipit` commits and pushes and stops there.
 - Optional: the pbir CLI for the Desktop guard. `pbir desktop list` needs Power BI Desktop's
   "Enable external tool access to Power BI Desktop through secure local APIs" preview turned on.
 
@@ -70,16 +74,16 @@ description.
 Clone it into your personal skills folder:
 
 ```bash
-git clone https://github.com/InsightfulAnalytics/ship ~/.claude/skills/ship
+git clone https://github.com/InsightfulAnalytics/shipit ~/.claude/skills/shipit
 ```
 
 On Windows PowerShell:
 
 ```powershell
-git clone https://github.com/InsightfulAnalytics/ship "$env:USERPROFILE\.claude\skills\ship"
+git clone https://github.com/InsightfulAnalytics/shipit "$env:USERPROFILE\.claude\skills\shipit"
 ```
 
-Start a new Claude Code session and type `/ship`. Update later by running `git pull` in that
+Start a new Claude Code session and type `/shipit`. Update later by running `git pull` in that
 folder.
 
 The skill sets `disable-model-invocation: true`, so Claude never runs it on its own and it adds
@@ -88,20 +92,20 @@ nothing to your context until you type it.
 ## Optional: commit after every task
 
 Claude Code's default is to commit only when asked. To have it commit as it goes and leave the
-push and PR to `/ship`, add this to your `~/.claude/CLAUDE.md`:
+push and PR to `/shipit`, add this to your `~/.claude/CLAUDE.md`:
 
 ```markdown
 ## Git: commit without being asked
 
-This is a standing request to commit (the ship skill's auto-commit rule), so it replaces the
+This is a standing request to commit (the shipit skill's auto-commit rule), so it replaces the
 default of committing only when asked.
 
 - Before the first edit of a task in a git repo, note `git status --short`: the paths it lists
   are the user's work in progress and stay unstaged.
 - When the main session finishes a task that changed files in a git repo, commit it by following
-  steps 1 to 4 of `~/.claude/skills/ship/SKILL.md` (read it first). Subagents leave committing to
+  steps 1 to 4 of `~/.claude/skills/shipit/SKILL.md` (read it first). Subagents leave committing to
   the session that dispatched them.
-- Pushing, PRs and merging wait for `/ship` or `/ship merge`.
+- Pushing, PRs and merging wait for `/shipit` or `/shipit merge`.
 - A repo's own CLAUDE.md can override this: "commit on the current branch" skips step 3 there,
   and "no auto-commit" means no commits at all.
 ```
@@ -110,7 +114,7 @@ To have Claude also push and land each finished task, replace the "Pushing, PRs 
 line with:
 
 ```markdown
-- Then push, open the PR and land it by steps 5 and 6 of the same file, as `/ship merge` would,
+- Then push, open the PR and land it by steps 5 and 6 of the same file, as `/shipit merge` would,
   without waiting to be asked. Step 6's gate (up to date with the default branch, no conflict,
   every check passed) is what makes that safe; a stop anywhere in it is reported, not worked
   around.
@@ -118,22 +122,22 @@ line with:
 
 Under that rule, Claude stages only the files the task changed (plus a new `.gitignore` when the
 repo has none) and leaves your own work in progress alone. The skill's pre-approved commands
-apply only when you type `/ship`, so expect permission prompts for the git and gh commands in
+apply only when you type `/shipit`, so expect permission prompts for the git and gh commands in
 steps 1 to 4 (fetch, switch, add, commit and others) unless your settings allow them.
 
 ## Limits
 
-- One Claude session per checkout. `/ship` stages the whole tree and switches branches, so a
+- One Claude session per checkout. `/shipit` stages the whole tree and switches branches, so a
   second session's unfinished edits would ride in the PR. Give parallel sessions their own
   worktree.
 - Pull requests open on `origin`. If `origin` is your fork and you want a PR against the upstream
   project, open that one yourself.
 - Pull requests need GitHub. GitLab, Azure DevOps and other hosts get commit and push only.
-- `/ship merge` waits for CI for up to about 20 minutes. A longer pipeline stops the run with the
-  PR open: run `/ship merge` again once the checks finish.
+- `/shipit merge` waits for CI for up to about 20 minutes. A longer pipeline stops the run with the
+  PR open: run `/shipit merge` again once the checks finish.
 - Squash merge is the default. When a repo refuses squash merges, it falls back to a merge commit,
   then a rebase, and says which.
-- With a merge queue, `/ship merge` queues the PR and stops. Run `/ship merge` again once it lands
+- With a merge queue, `/shipit merge` queues the PR and stops. Run `/shipit merge` again once it lands
   to pull and prune, and delete the remote branch yourself unless the repo auto-deletes head
   branches.
 - Built on Windows 11 with git 2.55, gh 2.96 and Claude Code 2.1.
